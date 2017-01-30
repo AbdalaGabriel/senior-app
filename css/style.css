@@ -1,0 +1,49 @@
+body{
+    margin: 0;
+    padding: 0;
+}
+
+.infobox {
+    width: 50%;
+    float: left;
+    height: 25vh;
+    background: red;
+    color: white;
+    text-align: center;
+    line-height: 25vh;
+}
+
+.infobox:nth-child(1){
+background: #ffbc00
+}
+.infobox:nth-child(2){
+    background: #9100ff
+}
+.infobox:nth-child(3){
+    background: #00ffd0
+}
+.infobox:nth-child(4){
+    background: #cc00ff
+}
+
+#inicio .ui-content{
+    padding: 0;
+}
+
+#inicio h2{
+text-align: center;
+text-shadow: none;
+font-weight: 100;
+}
+
+
+
+#inicio{        min-height: 100vh;
+    background: #4e4e4e;
+    color: white;
+    text-shadow: none;
+    font-weight: 200;}
+
+    .buttonsContainer{position: absolute;
+    width: 100%;
+    bottom: 0;}
