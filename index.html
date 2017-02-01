@@ -10,10 +10,34 @@
 	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
 	<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+	<script type="text/javascript" src="js/jquery.ajax-cross-origin.min.js"></script>
 
 </head>
 
 <body>
+<div data-role="page" id="login">
+		<div data-role="header" class="none">
+
+
+		</div>
+		
+		<h2>Bienvenido, inicia sesón para continuar</h2>
+
+
+		<div data-role="content">	
+			<div class="buttonsContainer">
+				<label>Email</label>
+				<input type="Email" name=""  class="mail" required="" placeholder="Ej: minombre@gmail.com">
+				<label>Password</label>
+				<input type="Password" name="" class="pw"  required="" placeholder="Su contraseña">
+				<input type="hidden" id="token" value="CYU0hPENhC69U1H8WAB2Ko4gcPZTb1tx0oXzTDpY" name="">
+				<input type="submit" id="loguser" value="ingresar" name="">
+			</div>
+							<div class="infobox"><a id="toProjects" href="#home"  data-transition="flip">Organizador</a></div>
+
+		</div>
+	</div>
+
 
 	<div data-role="page" id="inicio">
 		<div data-role="header" class="none">
@@ -21,7 +45,7 @@
 
 		</div>
 		
-		<h2>Bienvenido, Gabriel</h2>
+		<h2 id="saludo"></h2>
 
 
 		<div data-role="content">	
