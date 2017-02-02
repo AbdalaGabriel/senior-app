@@ -2,6 +2,11 @@
 baseurl = "http://localhost:8000/";
 var userID = "";
 var userName = "";
+var consulta = "";
+var ajaxsuccess = false;
+var clientProjectsData = "";
+
+var consultedDataProject = false;
 //test2@test.com
 //baseurl = "http://gabdala.ferozo.com/clean/public/";
 
@@ -12,7 +17,6 @@ $( document ).ready(function() {
 	checkConection();
 	//baseurl = "http://gabdala.ferozo.com/clean/public/";
 	
-
 	// Chequeamos si el server de destino soporta CORS
 	// ENGLOBAR EN FUNCION CHEQUEOS, QUE VERIFIQUE TAMBN CONEXION	
 	var xhr = createCORSRequest('GET', baseurl+"admin/portfolio");
@@ -46,49 +50,17 @@ function checkConection()
 		{  
 			console.log('- Offline');	
 		}
-}
+	}
 
 
 
-function init()
-{
-    console.log("- Inicio de funcionalidades");
+	function init()
+	{
+		console.log("- Inicio de funcionalidades");
 	//Pantalla de login
-    loginfunction();
+	loginfunction();
 
-    // Funcionalidad página proyectos.
-    $("#toProjects").click(function()
-    {
-	  	console.log("- Mostrando página proyectos");
-	  	var route = baseurl+"app/projects";
-	  	tablaDatos = $("#proyectos");
-
-		//Petición AJAX a la API.
-		var consulta =  $.get(route, function(res)
-		{
-			console.log(res);
-			$(res).each(function(key, value)
-			{
-				tablaDatos.append('<p>'+value.title+'</p>');
-				celdaCategorias = $(".post-categories[data-id='"+value.id+"']");
-
-			});
-			
-		})
-
-		.done(function() 
-		{
-			console.log( "- Exito Ajax Carga" );
-		})
-
-		.fail(function()
-		{ 
-			console.log( "- Error en carga Ajax" );
-		})
-    });
 }
-
-
 
 
 
@@ -100,7 +72,6 @@ function loginfunction()
 	email = $(".mail");
 	pass = $(".pw");
 	
-
 	submit.click(function()
 	{
 		console.log("- Click enviar login");
@@ -127,8 +98,6 @@ function loginfunction()
 				type: 'GET',
 				dataType: 'json',
 
-
-
 				success: function(data)
 				{
 					console.log(data);
@@ -136,13 +105,15 @@ function loginfunction()
 					userID = data[0].id;
 					userName = data[0].name;
 					
+
 					$( ":mobile-pagecontainer" ).pagecontainer( "change", "#inicio");
-					$( ":mobile-pagecontainer" ).pagecontainer({
+					/*$( ":mobile-pagecontainer" ).pagecontainer({
 						show: function( event, ui ) {
 							console.log("- show");
 							pageInicio();
 						}
-					});
+					});*/
+					pageInicio();
 				}
 			});
 		}
@@ -150,14 +121,113 @@ function loginfunction()
 	});
 }
 
+// Funcion automatizada para hace run AJAX request
+function callAJAX(url, ajaxmethod, callbackFunction)
+{
+	if(ajaxmethod == "simple")
+	{
+		console.log("- Funcion simple de peticiòn AJAX");
+		var ajax =  $.get(url, function(res)
+		{
+			console.log(res);
+		})
+
+		.done(function(res) 
+		{
+			console.log( "- Exito Ajax Carga" );
+			consulta = res;
+			if(callbackFunction = "projects" )
+			{
+				renderProjects(consulta);
+			}			
+		})
+
+		.fail(function()
+		{ 
+			console.log( "- Error en carga Ajax" );
+		})
+	}
+	else if (ajaxmethod == "complete")
+	{
+		console.log("Completo");
+	}
+}
+
 
 // -----------------------------------------------------------------------
 // Pagina de inicio.
 function pageInicio()
 {
-	console.log("- Pagina de inicio");
 	$("#saludo").text("Bienvenido, "+userName );
+	console.log("- Mostrando página proyectos");
+	var route = baseurl+"app/projects/" + userID;
+	if(!consultedDataProject)
+	{
+		console.log("- Consulto datos de proyectos por primera vez");
+		callAJAX(route, "simple", "projects");
+	}
+	else
+	{
+		console.log("- Datos ya consultados, no vuelvo a hacer ajax")
+	}
+	
 }
+
+// Render de proyectos.
+// -----------------------------------------------------------------------
+
+function renderProjects(consulta)
+{
+	console.log(" - Render de proyectos");
+	clientProjectsData = consulta;
+	tablaDatos = $("#proyectos");
+	tablaDatos.empty();
+
+	$(clientProjectsData).each(function(key, value)
+	{
+		tablaDatos.append('<div class="projectContainer" data-project-id="'+value.id+'">'+value.title+'</div>');
+	});
+
+	$(".projectContainer").click(function()
+	{
+		projectID = $(this).attr("data-project-id")
+		console.log("- Project Id extraido: "+ projectID);
+		renderPhases(clientProjectsData, projectID);
+	});
+}
+
+
+// Render de Fases pro proyeceto
+function renderPhases(clientProjectsData, projectID)
+{
+	console.log("- Render de fases");
+	console.log(projectID);
+	projectArrayPosition = projectID - 1;
+	console.log(projectArrayPosition);
+	var thisProject = clientProjectsData[projectArrayPosition];
+
+	$("#tituloProject").text(thisProject.title);
+	$( ":mobile-pagecontainer" ).pagecontainer( "change", "#projectDetail");
+
+	var projectPhases = thisProject.phases;
+	var faesContainer = $("#Fases");
+	$(projectPhases).each(function(key, value)
+	{
+		faesContainer.append('<div class="phaseContainer" data-phase-id="'+value.id+'">'+value.title+'</div>');
+	});
+
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 // -----------------------------------------------------------------------
