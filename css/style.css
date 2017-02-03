@@ -78,3 +78,13 @@ padding: 0;
     margin: .5%;
     cursor: pointer;
 }
+
+.task-column{
+        width: 90%;
+    margin: 0 5%;
+    border: 1px solid;
+    min-height: 10em;
+}
+.task-title{
+    margin: 1em;
+}

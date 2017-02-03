@@ -183,28 +183,30 @@ function renderProjects(consulta)
 	tablaDatos = $("#proyectos");
 	tablaDatos.empty();
 
+	projectPosition = 0;
 	$(clientProjectsData).each(function(key, value)
 	{
-		tablaDatos.append('<div class="projectContainer" data-project-id="'+value.id+'">'+value.title+'</div>');
+		tablaDatos.append('<div class="projectContainer" data-position="'+projectPosition+'" data-project-id="'+value.id+'">'+value.title+'</div>');
+		projectPosition++;
 	});
 
 	$(".projectContainer").click(function()
 	{
-		projectID = $(this).attr("data-project-id")
-		console.log("- Project Id extraido: "+ projectID);
-		renderPhases(clientProjectsData, projectID);
+		thisProjectPosition = $(this).attr("data-position")
+		console.log("- Posicion extraida: "+ thisProjectPosition);
+		renderPhases(clientProjectsData, thisProjectPosition);
 	});
 }
 
 
 // Render de Fases pro proyeceto
-function renderPhases(clientProjectsData, projectID)
+function renderPhases(clientProjectsData, thisProjectPosition)
 {
 	console.log("- Render de fases");
-	console.log(projectID);
-	projectArrayPosition = projectID - 1;
-	console.log(projectArrayPosition);
-	var thisProject = clientProjectsData[projectArrayPosition];
+	console.log(thisProjectPosition);
+	thisProjectPosition;
+	console.log(thisProjectPosition);
+	var thisProject = clientProjectsData[thisProjectPosition];
 
 	$("#tituloProject").text(thisProject.title);
 	$( ":mobile-pagecontainer" ).pagecontainer( "change", "#projectDetail");
@@ -216,12 +218,105 @@ function renderPhases(clientProjectsData, projectID)
 		faesContainer.append('<div class="phaseContainer" data-phase-id="'+value.id+'">'+value.title+'</div>');
 	});
 
+	updatecards()
+
 }
 
 
 
 
 
+function updatecards()
+{
+	console.log( "- Iniciar la carga de tareas" );
+
+	// Limpieza de listeners y contenedores de elementos.
+	cleancolumns();
+	//console.log( "- Limpieza" );
+
+
+	// Generación dinámica de ruta en base a la vista de grupo de tareas activa.
+	phaseId = $("#phaseId").val();
+	taskroute = baseurl+"mis-proyectos/"+projectId+"/phases/"+phaseId+"/tareas";
+
+	// Por cada columna de tareas ejecuto un llamado ajax queme traiga ordenadas mis tarjetas
+	$(".task-column").each(function(key, value)
+	{
+		phaseId = $("#phaseId").val();
+		thisColumn = $(this);
+		thisColumnStatus = thisColumn.attr("data-tasks-status");
+		token = $("#token").val();
+
+		count = 0;
+		//console.log("el status de esta columna es "+ thisColumnStatus);
+
+		$.ajax(
+		{
+			url: baseurl+"phase/"+phaseId+"/tasks/"+thisColumnStatus,
+			headers: {'X-CSRF-TOKEN': token},
+			type: 'GET',
+			dataType: 'json',
+			
+			success: function(data){
+				//console.log("Orden!: ");
+				//console.log(data);
+				largoTarjetas = data.length;
+				if(largoTarjetas > 0)
+				{
+					colstatus = data[0].status;
+					columnForAppend = $('.task-column[data-tasks-status="'+colstatus+'"]')
+					
+					//console.log("data no es distinto de null y la columna es ");
+					//console.log(columnForAppend);
+					for(i=0;i<largoTarjetas;i++)
+					{
+						columnForAppend.append('<div  data-toggle="modal" data-target="#card-detail" class="task-container" data-task-order="'+data[i].task_order+'" data-task-status="'+data[i].status+'" data-task-id="'+data[i].id+'"><span data-status="4" data-id="'+data[i].id+'" class="hidecard">O</span><a href="#">'+data[i].title+'</a>'+data[i].description+'<p></p></div>');		
+					}
+
+
+				}	
+
+				count = count+1;
+				//console.log(count);
+				if(count == 3){
+					//console.log("terminaron las consultas, llamo func");
+					eventsForCards();
+				}
+
+			}
+		});
+
+	});
+
+	// consultar si hay tarjetas de tipo 4 para esta fase;
+	projectId = $("#projectId").val();
+	$.ajax(
+	{
+		url: baseurl+"phase/"+phaseId+"/tasks/4",
+		headers: {'X-CSRF-TOKEN': token},
+		type: 'GET',
+		dataType: 'json',
+
+		success: function(data){
+				console.log("Ocultas: ");
+				largoOcultas = data.length;
+
+				if(largoOcultas > 0){
+					$("#hiddenCards").text("Ver tarjetas ocultas de esta fase");
+
+					$("#hiddenCards").attr("href", baseurl+"/mis-proyectos/"+projectId+"/phase/"+phaseId+"/tareas-ocultas");
+				}
+			}
+		});
+
+
+	// Llamado a listeners
+	defineListerner();
+	// Declaracion de contenedores de elementos draggeables.
+	mannageDragAndDrop();
+	//console.log("termino ajax");
+
+}
 
 
 
