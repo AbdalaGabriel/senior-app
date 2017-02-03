@@ -5,6 +5,10 @@ var userName = "";
 var consulta = "";
 var ajaxsuccess = false;
 var clientProjectsData = "";
+var firstPhase = "";
+var todos = $("#todo-column");
+var inprogress = $("#inprogress-column");
+var done = $("#done-column");
 
 var consultedDataProject = false;
 //test2@test.com
@@ -204,8 +208,7 @@ function renderPhases(clientProjectsData, thisProjectPosition)
 {
 	console.log("- Render de fases");
 	console.log(thisProjectPosition);
-	thisProjectPosition;
-	console.log(thisProjectPosition);
+
 	var thisProject = clientProjectsData[thisProjectPosition];
 
 	$("#tituloProject").text(thisProject.title);
@@ -213,20 +216,35 @@ function renderPhases(clientProjectsData, thisProjectPosition)
 
 	var projectPhases = thisProject.phases;
 	var faesContainer = $("#Fases");
+	faesContainer.empty();
+
 	$(projectPhases).each(function(key, value)
 	{
 		faesContainer.append('<div class="phaseContainer" data-phase-id="'+value.id+'">'+value.title+'</div>');
 	});
 
-	updatecards()
+	// Selecciono primer fase, para apendearle las tarjetas a la pantalla.
+	firstPhase = thisProject.phases[0];
+	$("#phaseId").val(firstPhase.id);
+
+	// Mi funcion de updateo de tarjetas, recibe la fase activa, con lo cual le envio la primera fase como fase activa.
+	updatecards(firstPhase);
 
 }
 
 
 
+function cleancolumns()
+{
+	$("#confirm-create-task").off();
+	$("#new-task").off();
 
+	todos.empty();
+	inprogress.empty();
+	done.empty();
+}
 
-function updatecards()
+function updatecards(activephase)
 {
 	console.log( "- Iniciar la carga de tareas" );
 
@@ -236,86 +254,89 @@ function updatecards()
 
 
 	// Generación dinámica de ruta en base a la vista de grupo de tareas activa.
-	phaseId = $("#phaseId").val();
-	taskroute = baseurl+"mis-proyectos/"+projectId+"/phases/"+phaseId+"/tareas";
+	phaseId = activephase.id;
+	console.log("Estoy laburando con la fase + " + phaseId);
 
-	// Por cada columna de tareas ejecuto un llamado ajax queme traiga ordenadas mis tarjetas
+	// Por cada columna de tareas leo mi objeto data.
+	count = 0;
 	$(".task-column").each(function(key, value)
 	{
+		// Fase actual
 		phaseId = $("#phaseId").val();
+		
+		// Datos columna actual
 		thisColumn = $(this);
-		thisColumnStatus = thisColumn.attr("data-tasks-status");
-		token = $("#token").val();
+		thisColumnStatus = thisColumn.attr("data-tasks-status");	
+		console.log("el status de esta columna es "+ thisColumnStatus);
 
-		count = 0;
-		//console.log("el status de esta columna es "+ thisColumnStatus);
-
-		$.ajax(
+		// Búsqueda de tareas para éste estado de columna, dentro de ésta fase.
+		switch(thisColumnStatus) 
 		{
-			url: baseurl+"phase/"+phaseId+"/tasks/"+thisColumnStatus,
-			headers: {'X-CSRF-TOKEN': token},
-			type: 'GET',
-			dataType: 'json',
-			
-			success: function(data){
-				//console.log("Orden!: ");
-				//console.log(data);
-				largoTarjetas = data.length;
-				if(largoTarjetas > 0)
-				{
-					colstatus = data[0].status;
-					columnForAppend = $('.task-column[data-tasks-status="'+colstatus+'"]')
-					
-					//console.log("data no es distinto de null y la columna es ");
-					//console.log(columnForAppend);
-					for(i=0;i<largoTarjetas;i++)
-					{
-						columnForAppend.append('<div  data-toggle="modal" data-target="#card-detail" class="task-container" data-task-order="'+data[i].task_order+'" data-task-status="'+data[i].status+'" data-task-id="'+data[i].id+'"><span data-status="4" data-id="'+data[i].id+'" class="hidecard">O</span><a href="#">'+data[i].title+'</a>'+data[i].description+'<p></p></div>');		
-					}
+		    case "1":
+		        console.log("Corresponde a: todos")
+		        //console.log(activephase);
+		        //console.log(activephase["cards"]);
+		        //console.log(activephase["cards"]["todos"]);
+		        largoTarjetas = activephase["cards"]["todos"].length;
+		        thiscards = activephase["cards"]["todos"];
+		        console.log("y tiene " + largoTarjetas + "tareas")
+		        break;
+		    case "2":
+		        console.log("Corresponde a: in progress")
+		        //console.log(activephase);
+		        //console.log(activephase["cards"]);
+		        //console.log(activephase["cards"]["inprogress"]);
+		        largoTarjetas = activephase["cards"]["inprogress"].length;
+		        thiscards = activephase["cards"]["inprogress"];
+		        console.log("y tiene " + largoTarjetas + "tareas")
+		        break;
+		    case "3":
+		        console.log("Corresponde a: done")
+		        //console.log(activephase);
+		        //console.log(activephase["cards"]);
+		        //console.log(activephase["cards"]["done"]);
+		        largoTarjetas = activephase["cards"]["done"].length;
+		        thiscards = activephase["cards"]["done"];
+		        console.log("y tiene " + largoTarjetas + "tareas")
+		        break;
 
+		    case "4":
+		        console.log("Corresponde a: hidden")
+		        //console.log(activephase);
+		        //console.log(activephase["cards"]);
+		        //console.log(activephase["cards"]["hidden"]);
+		        largoTarjetas = activephas["cards"]["hidden"].length;
+		        thiscards = activephase["cards"]["hidden"];
+		        console.log("y tiene " + largoTarjetas + "tareas")
+		        break;
+		   
+		}
 
-				}	
+		//largoTarjetas = activephase.cards.length;
+		if(largoTarjetas > 0)
+		{
+			colstatus = thiscards[0].status;
+			columnForAppend = $('.task-column[data-tasks-status="'+colstatus+'"]')
 
-				count = count+1;
-				//console.log(count);
-				if(count == 3){
-					//console.log("terminaron las consultas, llamo func");
-					eventsForCards();
-				}
-
+			console.log("data no es distinto de null y la columna es ");
+			console.log(columnForAppend);
+			for(i=0;i<largoTarjetas;i++)
+			{
+				columnForAppend.append('<div  data-toggle="modal" data-target="#card-detail" class="task-container" data-task-order="'+thiscards[i].task_order+'" data-task-status="'+thiscards[i].status+'" data-task-id="'+thiscards[i].id+'"><span data-status="4" data-id="'+thiscards[i].id+'" class="hidecard">O</span><a href="#">'+thiscards[i].title+'</a>'+thiscards[i].description+'<p></p></div>');							
 			}
-		});
 
+		}	
+
+		count = count+1;
+		//console.log(count);
+		if(count == 3){
+			console.log("terminaron las consultas, llamo func");
+				//eventsForCards();
+		}
+		
 	});
-
-	// consultar si hay tarjetas de tipo 4 para esta fase;
-	projectId = $("#projectId").val();
-	$.ajax(
-	{
-		url: baseurl+"phase/"+phaseId+"/tasks/4",
-		headers: {'X-CSRF-TOKEN': token},
-		type: 'GET',
-		dataType: 'json',
-
-		success: function(data){
-				console.log("Ocultas: ");
-				largoOcultas = data.length;
-
-				if(largoOcultas > 0){
-					$("#hiddenCards").text("Ver tarjetas ocultas de esta fase");
-
-					$("#hiddenCards").attr("href", baseurl+"/mis-proyectos/"+projectId+"/phase/"+phaseId+"/tareas-ocultas");
-				}
-			}
-		});
-
-
-	// Llamado a listeners
-	defineListerner();
-	// Declaracion de contenedores de elementos draggeables.
+	
 	mannageDragAndDrop();
-	//console.log("termino ajax");
-
 }
 
 
