@@ -40,16 +40,20 @@ function mannageDragAndDrop()
 			i++;
 		});
 
+		// Convertir array a string para mandar a get.
+		cardsPosition = JSON.stringify(cardsPosition);
+
+		console.log(cardsPosition);
 		//console.log(cardsPosition);
 		token = $("#token").val();
 		// Ejecuto Ajax enviando nuevo orden a la bd
 		$.ajax(
 		{
-			url: baseurl+"tasks/"+taskID+"/changeorder/",
-			headers: {'X-CSRF-TOKEN': token},
-			type: 'POST',
+			url: baseurl+"app/tasks/"+taskID+"/changeorder/"+cardsPosition,
+			crossOrigin: true,
+			type: 'GET',
 			dataType: 'json',
-			data: {neworder: cardsPosition},
+			//data: {neworder: cardsPosition},
 
 			success: function(){
 				//console.log("Se grabo el nuevo orden en la base de datos");
@@ -97,14 +101,18 @@ function mannageDragAndDrop()
 
 		//console.log(cardsPosition);
 		token = $("#token").val();
+
+		// Convertir array a string para mandar a get.
+		cardsPosition = JSON.stringify(cardsPosition);
+		console.log(cardsPosition);
 		// Ejecuto Ajax enviando nuevo orden a la bd
 		$.ajax(
 		{
-			url: baseurl+"tasks/"+taskID+"/changeorder/",
-			headers: {'X-CSRF-TOKEN': token},
-			type: 'POST',
+			url: baseurl+"app/tasks/"+taskID+"/changeorder/"+cardsPosition,
+			crossOrigin: true,
+			type: 'GET',
 			dataType: 'json',
-			data: {neworder: cardsPosition},
+			//data: {neworder: cardsPosition},
 
 			success: function(){
 				//console.log("oks");
