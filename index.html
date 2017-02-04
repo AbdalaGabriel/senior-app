@@ -33,8 +33,7 @@
 				<input type="hidden" id="token" value="CYU0hPENhC69U1H8WAB2Ko4gcPZTb1tx0oXzTDpY" name="">
 				<input type="submit" id="loguser" value="ingresar" name="">
 			</div>
-			<div class="infobox"><a id="toProjects" href="#home"  data-transition="flip">Organizador</a></div>
-
+		
 		</div>
 	</div>
 
@@ -59,7 +58,7 @@
 	</div>
 
 	<div data-role="page" id="home" class="page">
-
+		
 		<div data-role="header" class="none">
 			<h1 id="titulo"></h1>
 
@@ -81,7 +80,7 @@
 			<h1 id="tituloProject"></h1>
 		</div>
 
-		<div data-role="main">	
+		<div id="columnsBg" data-role="main">	
 
 			<h3> Fases de este proyecto:</h3>
 			<input type="hidden" id="phaseId">
@@ -101,6 +100,30 @@
 			</div>
 			
 		</div>
+	</div>
+
+	<div data-role="page" id="card" class="page">
+		<input type="hidden" id="thisTaskId">
+		<div data-role="header" class="none">
+			<h1 id="titleCardPage"></h1>
+
+		</div>
+
+		<div data-role="main">	
+
+			<h3 id="descriptionCardPage"></h3>
+			
+			<h4>Discussions</h4>
+			<div id="cardComments">
+				
+				
+			</div>
+			<div id="addComentToCard">
+				<input type="text" id="newComment" placeholder="Ingrese su comentario">
+				<button id="sendComment">Enviar</button>
+			</div>
+		</div>
+
 	</div>
 
 </div>

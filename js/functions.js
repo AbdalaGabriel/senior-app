@@ -9,6 +9,7 @@ var firstPhase = "";
 var todos = $("#todo-column");
 var inprogress = $("#inprogress-column");
 var done = $("#done-column");
+var newComentForAppended = false;
 
 var consultedDataProject = false;
 //test2@test.com
@@ -126,12 +127,12 @@ function loginfunction()
 }
 
 // Funcion automatizada para hace run AJAX request
-function callAJAX(url, ajaxmethod, callbackFunction)
+function callAJAX(requesturl, ajaxmethod, callbackFunction)
 {
 	if(ajaxmethod == "simple")
 	{
 		console.log("- Funcion simple de peticiòn AJAX");
-		var ajax =  $.get(url, function(res)
+		var ajax =  $.get(requesturl, function(res)
 		{
 			console.log(res);
 		})
@@ -140,7 +141,7 @@ function callAJAX(url, ajaxmethod, callbackFunction)
 		{
 			console.log( "- Exito Ajax Carga" );
 			consulta = res;
-			if(callbackFunction = "projects" )
+			if(callbackFunction == "projects" )
 			{
 				renderProjects(consulta);
 			}			
@@ -154,6 +155,28 @@ function callAJAX(url, ajaxmethod, callbackFunction)
 	else if (ajaxmethod == "complete")
 	{
 		console.log("Completo");
+		$.ajax(
+		{
+			url: requesturl,
+			crossOrigin: true,
+			type: 'GET',
+			dataType: 'json',
+			//data: {neworder: cardsPosition},
+
+			success: function(res){
+				console.log( "- Exito Ajax Carga" );
+				consulta = res;
+				if(callbackFunction == "cards" )
+				{
+					renderCards(consulta);
+				}
+				else if(callbackFunction == "comments")
+				{
+					newComentForAppended = true;
+					renderComments(newComentForAppended);
+				}			
+			}
+		});
 	}
 }
 
@@ -179,7 +202,6 @@ function pageInicio()
 
 // Render de proyectos.
 // -----------------------------------------------------------------------
-
 function renderProjects(consulta)
 {
 	console.log(" - Render de proyectos");
@@ -232,21 +254,122 @@ function renderPhases(clientProjectsData, thisProjectPosition)
 
 }
 
-
-
-function cleancolumns()
+// Eventos de tarjetas.
+function eventsForCards()
 {
-	$("#confirm-create-task").off();
-	$("#new-task").off();
+	console.log("- Eventos para tarjetas.");
+	$(".task-container").off();
+	$(".task-container").click(function()
+	{
+		console.log("- Click en tarjeta");
+		
+		// Extracion y seteo de variables
+		cardId = $(this).attr("data-task-id");
+		cardPosition = $(this).attr("data-array-position");
+		fromPhase = $(this).attr("data-from-phase");
+		title = $(this).find("a.titleCard").text();
+		description = $(this).find("p.descriptionCard").text();
+		cardroute = baseurl+"app/task/"+cardId+"/comments";
+		
+		// Ajax para ver comentarios
+		callAJAX(cardroute, "complete", "cards");
+		
+		// Cambio de informacion en pantalla de render.
+		$("#titleCardPage").text(title);
+		$("#descriptionCardPage").text(description);
+		$("#thisTaskId").val(cardId);
 
-	todos.empty();
-	inprogress.empty();
-	done.empty();
+	});
+
 }
 
-function updatecards(activephase)
+// Render de tarjetas.
+function renderCards(consulta)
 {
-	console.log( "- Iniciar la carga de tareas" );
+	console.log("- Mostrando detalle de tarjeta");
+	renderComments(consulta);
+
+	$( ":mobile-pagecontainer" ).pagecontainer( "change", "#card");
+	
+	// Saco evento asi no se lo appendea cada vez que entra a la tarjeta y manda multiple cosltas.
+	$("#sendComment").off();
+	
+	$("#sendComment").click(function()
+	{
+		console.log("Click en enviar comentario");
+		newComment = $("#newComment").val();
+		if(newComment != ""){
+			console.log("- Enviar comentario");
+			comentRoute = baseurl+"app/"+userID+"/task/"+cardId+"/"+newComment;
+			console.log(comentRoute);
+			callAJAX(comentRoute, "complete", "comments");
+		}
+		else
+		{
+			console.log("- Comentario vacio, no se envia nada");
+		}
+	});
+
+ 	// por ahora vamos a hacer una llamada ajax par ver comentarios
+ 	// fijarse luego sin conex, localstorage.
+
+ }
+
+ function renderComments(consulta){
+ 	console.log(consulta);
+
+ 	// SI lo que me llega e suna vairable en true significa que hay un nuevo comentario para apendear
+ 	// Lo hago via html no es necesario que haga una consulta ajax, si lo q me llega es un objeto json, aahi si.
+
+ 	if(newComentForAppended == true)
+ 	{
+ 		console.log("- Solo appendeo porque es un nuevo coment de la misma fase..");
+ 		commentsContainer = $("#cardComments");
+ 		newComment = $("#newComment").val();
+ 		$("#newComment").val("");
+ 		$("#newComment").attr("placeholder","Ingresar comentario");
+ 		// @TODO: hacer username un eleento html para extraer el nombre, ahora sale de un objeto json.
+ 		commentsContainer.append('<div class="commentContainer">'+newComment+'<p>by '+userName+'</p> </div>');
+ 		newComentForAppended = false;
+
+ 	}
+ 	else
+ 	{
+		console.log("- Reset de coments porque llego objeto desde fase.");
+		cardId = $("#thisTaskId").val();
+		commentsContainer = $("#cardComments");
+		commentsContainer.empty();
+	 	//console.log("- Se agrego comentario");
+	 	if (consulta != "No-comments")
+		{
+			console.log("- Render comments");
+			$(consulta).each(function(key, value)
+			{
+				commentsContainer.append('<div class="commentContainer">'+value.comment+'<p>by '+value.username+'</p> </div>');
+			});
+		}
+		else
+		{
+			console.log("- No tiene comentarios");
+			commentsContainer.append('<p class="no-coments">Esta tarjeta no tiene comentarios</p>')
+		}
+	}
+ }
+
+// Fncion de limpieza de columnas.
+ function cleancolumns()
+ {
+ 	$("#confirm-create-task").off();
+ 	$("#new-task").off();
+
+ 	todos.empty();
+ 	inprogress.empty();
+ 	done.empty();
+ }
+
+ function updatecards(activephase)
+ {
+ 	console.log( "- Iniciar la carga de tareas" );
 
 	// Limpieza de listeners y contenedores de elementos.
 	cleancolumns();
@@ -272,8 +395,8 @@ function updatecards(activephase)
 		// Búsqueda de tareas para éste estado de columna, dentro de ésta fase.
 		switch(thisColumnStatus) 
 		{
-		    case "1":
-		        console.log("Corresponde a: todos")
+			case "1":
+			console.log("Corresponde a: todos")
 		        //console.log(activephase);
 		        //console.log(activephase["cards"]);
 		        //console.log(activephase["cards"]["todos"]);
@@ -281,7 +404,7 @@ function updatecards(activephase)
 		        thiscards = activephase["cards"]["todos"];
 		        console.log("y tiene " + largoTarjetas + "tareas")
 		        break;
-		    case "2":
+		        case "2":
 		        console.log("Corresponde a: in progress")
 		        //console.log(activephase);
 		        //console.log(activephase["cards"]);
@@ -290,7 +413,7 @@ function updatecards(activephase)
 		        thiscards = activephase["cards"]["inprogress"];
 		        console.log("y tiene " + largoTarjetas + "tareas")
 		        break;
-		    case "3":
+		        case "3":
 		        console.log("Corresponde a: done")
 		        //console.log(activephase);
 		        //console.log(activephase["cards"]);
@@ -300,7 +423,7 @@ function updatecards(activephase)
 		        console.log("y tiene " + largoTarjetas + "tareas")
 		        break;
 
-		    case "4":
+		        case "4":
 		        console.log("Corresponde a: hidden")
 		        //console.log(activephase);
 		        //console.log(activephase["cards"]);
@@ -309,8 +432,8 @@ function updatecards(activephase)
 		        thiscards = activephase["cards"]["hidden"];
 		        console.log("y tiene " + largoTarjetas + "tareas")
 		        break;
-		   
-		}
+
+		    }
 
 		//largoTarjetas = activephase.cards.length;
 		if(largoTarjetas > 0)
@@ -322,7 +445,7 @@ function updatecards(activephase)
 			console.log(columnForAppend);
 			for(i=0;i<largoTarjetas;i++)
 			{
-				columnForAppend.append('<div  data-toggle="modal" data-target="#card-detail" class="task-container" data-task-order="'+thiscards[i].task_order+'" data-task-status="'+thiscards[i].status+'" data-task-id="'+thiscards[i].id+'"><span data-status="4" data-id="'+thiscards[i].id+'" class="hidecard">O</span><a href="#">'+thiscards[i].title+'</a>'+thiscards[i].description+'<p></p></div>');							
+				columnForAppend.append('<div  class="task-container" data-array-position="'+i+'" data-from-phase="'+phaseId+'" data-task-order="'+thiscards[i].task_order+'" data-task-status="'+thiscards[i].status+'" data-task-id="'+thiscards[i].id+'"><span data-status="4" data-id="'+thiscards[i].id+'" class="hidecard">O</span><a class="titleCard" href="#">'+thiscards[i].title+'</a><p class="descriptionCard">'+thiscards[i].description+'</p></div>');							
 			}
 
 		}	
@@ -331,17 +454,15 @@ function updatecards(activephase)
 		//console.log(count);
 		if(count == 3){
 			console.log("terminaron las consultas, llamo func");
-				//eventsForCards();
+			eventsForCards();
 		}
 		
 	});
+
+
 	
 	mannageDragAndDrop();
 }
-
-
-
-
 
 
 
