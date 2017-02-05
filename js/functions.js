@@ -144,6 +144,10 @@ function callAJAX(requesturl, ajaxmethod, callbackFunction)
 			if(callbackFunction == "projects" )
 			{
 				renderProjects(consulta);
+			}
+			else if(callbackFunction == "blog")
+			{
+				renderBlog(consulta);
 			}			
 		})
 
@@ -181,6 +185,8 @@ function callAJAX(requesturl, ajaxmethod, callbackFunction)
 }
 
 
+
+
 // -----------------------------------------------------------------------
 // Pagina de inicio.
 function pageInicio()
@@ -197,7 +203,26 @@ function pageInicio()
 	{
 		console.log("- Datos ya consultados, no vuelvo a hacer ajax")
 	}
+
+	$("#blogButton").click(function()
+	{
+		routeBlog = baseurl + "app/blog";
+		callAJAX(routeBlog, "simple", "blog");
+	});
 	
+}
+
+function renderBlog(consulta)
+{
+	console.log(" - Render de posteos");
+	postsData = consulta;
+	postContainer = $("#postsContainer");
+	postContainer.empty();
+	$(postsData).each(function(key, value)
+	{
+		postContainer.append('<div class="simplepost-container" data-project-id="'+value.id+'">'+value.title+'</div>');
+		
+	});
 }
 
 // Render de proyectos.
