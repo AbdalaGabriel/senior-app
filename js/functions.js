@@ -20,6 +20,7 @@ $( document ).ready(function() {
 	init();
 
 	checkConection();
+	initParticles();
 	//baseurl = "http://gabdala.ferozo.com/clean/public/";
 	
 	// Chequeamos si el server de destino soporta CORS
@@ -32,6 +33,12 @@ $( document ).ready(function() {
 		console.log("- CORS Suported");
 	}
 });
+
+function initParticles(){
+	particlesJS.load('particles-js', 'js/particles/particles.json', function() {
+	  console.log('callback - particles.js config loaded');
+	});
+}
 
 function checkConection()
 {		
@@ -191,7 +198,7 @@ function callAJAX(requesturl, ajaxmethod, callbackFunction)
 // Pagina de inicio.
 function pageInicio()
 {
-	$("#saludo").text("Bienvenido, "+userName );
+	$("#saludo").text("Hola, "+userName );
 	console.log("- Mostrando página proyectos");
 	var route = baseurl+"app/projects/" + userID;
 	if(!consultedDataProject)
