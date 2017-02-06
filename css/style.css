@@ -1,0 +1,141 @@
+body
+{
+margin: 0;
+padding: 0;
+}
+
+.infobox 
+{
+width: 50%;
+float: left;
+height: 25vh;
+background: red;
+color: white;
+text-align: center;
+line-height: 25vh;
+}
+
+.infobox:nth-child(1)
+{
+background: #ffbc00
+}
+
+.infobox:nth-child(2)
+{
+background: #9100ff
+}
+
+.infobox:nth-child(3)
+{
+background: #00ffd0
+}
+
+.infobox:nth-child(4)
+{
+background: #cc00ff
+}
+
+#inicio .ui-content
+{
+padding: 0;
+}
+
+#inicio h2
+{
+    text-align: center;
+    text-shadow: none;
+    font-weight: 100;
+}
+
+#inicio
+{        
+    min-height: 100vh;
+    background: #191919;
+    color: white;
+    text-shadow: none;
+    font-weight: 200;
+}
+
+.buttonsContainer
+{
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+}
+
+.projectContainer
+{
+    display: block;
+    width: 49%;
+    height: 10em;
+    background: #505792;
+    text-align: center;
+    line-height: 10em;
+    color: white;
+    text-shadow: none;
+    font-weight: 100;
+    float: left;
+    margin: .5%;
+    cursor: pointer;
+}
+
+.task-column{
+     width: 88%;
+    margin: 0 5%;
+    /* border: 1px solid; */
+    min-height: 10em;
+    background: white;
+    padding: 1%;
+}
+.task-title{
+    margin: 1em;
+}
+
+#done-column .task-container{
+      text-decoration: line-through !important;
+}
+
+#done-column .hidecard {
+display: block;
+}
+
+#columnsBg {
+       background: #245d90;
+    margin: 0;
+    text-shadow: none !important;
+    color: white;
+    padding: .5em;
+}
+
+.task-container{
+      cursor: pointer;
+    background: #dce5ec;
+    padding: .5em;
+    margin: 1em;
+    color: #656565;
+    border-radius: .6em;
+    position: relative;
+        border-radius: .3em;
+
+}
+.task-container:hover{
+  opacity: .5;
+
+}
+
+
+.task-container a{
+  display: block;
+}
+
+.hidecard {
+    position: absolute;
+    right: 0;
+    background: white;
+    padding: .2em .6em;
+    display: block;
+    cursor: pointer;
+    border-radius: 1em;
+    z-index: 100;
+    display: none;
+}
