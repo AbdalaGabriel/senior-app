@@ -155,6 +155,10 @@ function callAJAX(requesturl, ajaxmethod, callbackFunction)
 			else if(callbackFunction == "blog")
 			{
 				renderBlog(consulta);
+			}
+			else if(callbackFunction == "multimedianow")
+			{
+				renderMultimediaNow(consulta);
 			}			
 		})
 
@@ -217,12 +221,33 @@ function pageInicio()
 		callAJAX(routeBlog, "simple", "blog");
 	});
 	
+
+	$("#toMultimediaNow").click(function(){
+		console.log("- Click en secciòn multimedia");
+		routeMultimedia = "http://gabrielabdala.com/twitterapi/";
+		callAJAX(routeMultimedia, "simple", "multimedianow");
+	});
 }
+
+function renderMultimediaNow(consulta)
+{
+	console.log("- Render multimedia now page");
+	//console.log(consulta);
+	twitsData = consulta;
+	twitsContainer = $("#twitsContainer");
+	twitsContainer.empty();
+	$(twitsData).each(function(key, value)
+	{
+		twitsContainer.append('<div class="twitContainer">'+value.text+'</div>');
+		
+	});
+}
+
 
 function renderBlog(consulta)
 {
 	console.log(" - Render de posteos");
-	postsData = consulta;
+	postsData = JSON.parse(consulta)
 	postContainer = $("#postsContainer");
 	postContainer.empty();
 	$(postsData).each(function(key, value)
