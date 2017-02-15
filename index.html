@@ -25,15 +25,18 @@
 
 
 		<div data-role="content">	
+		<div id="particles-js"></div>
+
 			<div class="buttonsContainer">
-				<label>Email</label>
-				<input type="Email" name=""  class="mail" required="" placeholder="Ej: minombre@gmail.com">
-				<label>Password</label>
-				<input type="Password" name="" class="pw"  required="" placeholder="Su contraseña">
-				<input type="hidden" id="token" value="CYU0hPENhC69U1H8WAB2Ko4gcPZTb1tx0oXzTDpY" name="">
-				<input type="submit" id="loguser" value="ingresar" name="">
+				<div class="containerforButtons">
+					<label>Email</label>
+					<input type="Email" name=""  class="mail" required="" placeholder="Ej: minombre@gmail.com">
+					<label>Password</label>
+					<input type="Password" name="" class="pw"  required="" placeholder="Su contraseña">
+					<input type="hidden" id="token" value="CYU0hPENhC69U1H8WAB2Ko4gcPZTb1tx0oXzTDpY" name="">
+					<input type="submit" id="loguser" value="ingresar" name="">
+				</div>
 			</div>
-		
 		</div>
 	</div>
 
@@ -50,8 +53,8 @@
 		<div data-role="content">	
 			<div class="buttonsContainer">
 				<div class="infobox"><a id="toProjects" href="#home"  data-transition="flip">Organizador</a></div>
-				<div class="infobox">Multimedia now</div>
-				<div id="blogButton"> <a href="#blog" data-transition="flip"  class="infobox">Noticias</a></div>
+				<div class="infobox"><a id="toMultimediaNow" href="#multimediaNow" data-transition="flip"  class="infobox">Multimedia now</a></div>
+				<div class="infobox" id="blogButton"> <a href="#blog" data-transition="flip"  class="infobox">Noticias</a></div>
 				<div class="infobox">Configuración</div>
 			</div>
 		</div>
@@ -144,6 +147,23 @@
 
 	</div>
 
+	<div data-role="page" id="multimediaNow" class="page">
+		
+		<div data-role="header" class="none">
+			<h1>Multimedia Now</h1>
+			<h2>#multimedia on Twitter</h2>
+
+		</div>
+
+		<div data-role="main">	
+			<div id="twitsContainer">
+
+
+			</div>
+		</div>
+
+	</div>
+
 
 </div>
 
@@ -153,6 +173,7 @@
 <script type="text/javascript" src="cordova.js"></script> 
 <script type="text/javascript" src="js/jquery-ui.min.js"></script>
 <script type="text/javascript" src="js/draganddrop.js"></script>
+<script src="js/particles/particle.js"></script>
 <script src="js/functions.js" ></script>
 </body>
 </html>

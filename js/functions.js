@@ -20,6 +20,7 @@ $( document ).ready(function() {
 	init();
 
 	checkConection();
+	initParticles();
 	//baseurl = "http://gabdala.ferozo.com/clean/public/";
 	
 	// Chequeamos si el server de destino soporta CORS
@@ -32,6 +33,12 @@ $( document ).ready(function() {
 		console.log("- CORS Suported");
 	}
 });
+
+function initParticles(){
+	particlesJS.load('particles-js', 'js/particles/particles.json', function() {
+	  console.log('callback - particles.js config loaded');
+	});
+}
 
 function checkConection()
 {		
@@ -148,6 +155,10 @@ function callAJAX(requesturl, ajaxmethod, callbackFunction)
 			else if(callbackFunction == "blog")
 			{
 				renderBlog(consulta);
+			}
+			else if(callbackFunction == "multimedianow")
+			{
+				renderMultimediaNow(consulta);
 			}			
 		})
 
@@ -191,7 +202,7 @@ function callAJAX(requesturl, ajaxmethod, callbackFunction)
 // Pagina de inicio.
 function pageInicio()
 {
-	$("#saludo").text("Bienvenido, "+userName );
+	$("#saludo").text("Hola, "+userName );
 	console.log("- Mostrando página proyectos");
 	var route = baseurl+"app/projects/" + userID;
 	if(!consultedDataProject)
@@ -210,12 +221,33 @@ function pageInicio()
 		callAJAX(routeBlog, "simple", "blog");
 	});
 	
+
+	$("#toMultimediaNow").click(function(){
+		console.log("- Click en secciòn multimedia");
+		routeMultimedia = "http://gabrielabdala.com/twitterapi/";
+		callAJAX(routeMultimedia, "simple", "multimedianow");
+	});
 }
+
+function renderMultimediaNow(consulta)
+{
+	console.log("- Render multimedia now page");
+	//console.log(consulta);
+	twitsData = consulta;
+	twitsContainer = $("#twitsContainer");
+	twitsContainer.empty();
+	$(twitsData).each(function(key, value)
+	{
+		twitsContainer.append('<div class="twitContainer">'+value.text+'</div>');
+		
+	});
+}
+
 
 function renderBlog(consulta)
 {
 	console.log(" - Render de posteos");
-	postsData = consulta;
+	postsData = JSON.parse(consulta)
 	postContainer = $("#postsContainer");
 	postContainer.empty();
 	$(postsData).each(function(key, value)
