@@ -233,10 +233,23 @@ function renderMultimediaNow(consulta)
 {
 	console.log("- Render multimedia now page");
 	//console.log(consulta);
-	twitsData = consulta;
+	twitsData = JSON.parse(consulta);
+	console.log(twitsData);
 	twitsContainer = $("#twitsContainer");
 	twitsContainer.empty();
-	$(twitsData).each(function(key, value)
+
+	/*
+		The $.each() function is not the same as $(selector).each(), which is used to iterate, exclusively, 
+		over a jQuery object. The $.each() function can be used to iterate over any collection, whether it 
+		is an object or an array. In the case of an array, the callback is passed an array index and a 
+		corresponding array value each time. (The value can also be accessed through the this keyword,
+		 but Javascript will always wrap the this value as an Object even if it is a simple string or 
+		number value.) The method returns its first argument, the object that was iterated.
+
+		http://api.jquery.com/jquery.each/
+	*/
+
+	$.each( twitsData, function(key, value)
 	{
 		twitsContainer.append('<div class="twitContainer">'+value.text+'</div>');
 		
@@ -252,7 +265,7 @@ function renderBlog(consulta)
 	postContainer.empty();
 	$(postsData).each(function(key, value)
 	{
-		postContainer.append('<div class="simplepost-container" data-project-id="'+value.id+'">'+value.title+'</div>');
+		postContainer.append('<div class="simplepost-container" data-project-id="'+value.id+'">'+value.twit+'</div>');
 		
 	});
 }
